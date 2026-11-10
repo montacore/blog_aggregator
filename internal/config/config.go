@@ -55,3 +55,6 @@ func (c Config) SetUser(username string) error {
 }
 
 // NOTE: write marshals cfg to JSON and writes to the file
+func write(cfg Config) error {
+
+}

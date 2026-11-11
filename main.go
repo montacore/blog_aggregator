@@ -4,10 +4,14 @@ import (
 	"fmt"
 	"github.com/montacore/blog_aggregator/internal/config"
 	"os"
+	_ "github.com/lib/pq"
+	"database/sql"
+	"internal/database"
 )
 
 type state struct {
 	cfg			*config.Config
+	db			*database.Queries
 
 }
 func main() {
@@ -16,8 +20,14 @@ func main() {
 		fmt.Printf("error reading from config file: %s", err)
 		os.Exit(1)
 	}
-	programState := state{&cfg}
 
+	dbURL := cfg.DbURL
+	db, err := sql.Open("postgres", dbURL)
+	db, err = database.New(db)
+	if err != nil {
+		fmt.Printf("[ERROR] there was an issue creating database connection %s", err)
+	}
+	programState := state{&cfg, db}
 	if len(os.Args) <= 2 {
 		fmt.Println("[ERROR] not enough arguments provided")
 		os.Exit(1)

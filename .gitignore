@@ -1,3 +1,5 @@
 .env
 blog_aggregator
+*.txt
+*.log
 

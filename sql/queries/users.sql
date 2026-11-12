@@ -8,5 +8,10 @@ SELECT *
 FROM users
 WHERE name = $1;
 
--- name: reset :exec
+-- name: Reset :exec
 TRUNCATE users;
+
+-- name: GetUsers :many
+SELECT
+    *
+FROM users;

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"github.com/google/uuid"
-	"time"
-	"github.com/montacore/blog_aggregator/internal/database"
 	"context"
+	"fmt"
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/montacore/blog_aggregator/internal/database"
 )
 func handlerLogin(s *state, cmd command) error {
 	if len(cmd.args) == 0 {
@@ -51,3 +52,26 @@ func handlerRegister(s *state, cmd command) error {
 	return nil
 }
 
+func handlerReset(s *state, cmd command) error {
+	err := s.db.Reset(context.Background())
+	if err != nil {
+		return fmt.Errorf("failed to clear users: %w", err)
+	}
+	fmt.Println("Users successfully cleared!")
+	return nil
+}
+
+func handlerUsers(s *state, cmd command) error{
+	users, err := s.db.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("[error] retrieving users data from table, %w", err)
+	}
+	for _, user := range users {
+		if user.Name == s.cfg.CurrentUsername {
+			fmt.Printf("* %s (current)\n", user.Name)
+			continue
+		}
+		fmt.Printf("* %s\n", user.Name)
+	}
+	return nil
+}

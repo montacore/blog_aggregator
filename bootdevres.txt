@@ -1,0 +1,106 @@
+Running next lesson:
+2.4 - Database Integration
+Using overridden base_url: https://montacore.github.io/site-gen/
+You can reset to the default with `bootdev config base_url --reset`
+
+╭──────────────────╮
+│ Register kahya 🛡︎ │
+╰┬─────────────────╯
+ > Command: go run . register kahya
+ ├─  ?  Expect exit code 0
+
+ > Command exit code: 1
+ > Command stdout:
+
+[error] encountered error running handler: pq: duplicate key value violates unique constraint "users_name_key" (23505)
+ > Command stderr:
+
+exit status 1
+╭───────────────────────────────╮
+│ Reject a duplicate username 🛡︎ │
+╰┬──────────────────────────────╯
+ > Command: go run . register kahya
+ ├─  ?  Expect exit code 1
+
+ > Command exit code: 1
+ > Command stdout:
+
+[error] encountered error running handler: pq: duplicate key value violates unique constraint "users_name_key" (23505)
+ > Command stderr:
+
+exit status 1
+╭───────────────────────────────────╮
+│ Check kahya is the current user 🛡︎ │
+╰┬──────────────────────────────────╯
+ > Command: cat ~/.gatorconfig.json
+ ├─  ?  Expect exit code 0
+ ├─  ?  Expect stdout to contain all of:
+ │       - 'kahya'                      
+
+ > Command exit code: 0
+ > Command stdout:
+
+{"db_url":"postgres://postgres:postgres@localhost:5432/gator?sslmode=disable","current_user_name":"unknown"}
+╭────────────────────╮
+│ Register holgith 🛡︎ │
+╰┬───────────────────╯
+ > Command: go run . register holgith
+ ├─  ?  Expect exit code 0
+
+ > Command exit code: 1
+ > Command stdout:
+
+[error] encountered error running handler: pq: duplicate key value violates unique constraint "users_name_key" (23505)
+ > Command stderr:
+
+exit status 1
+╭─────────────────────────────────────╮
+│ Check holgith is the current user 🛡︎ │
+╰┬────────────────────────────────────╯
+ > Command: cat ~/.gatorconfig.json
+ ├─  ?  Expect exit code 0
+ ├─  ?  Expect stdout to contain all of:
+ │       - 'holgith'                    
+
+ > Command exit code: 0
+ > Command stdout:
+
+{"db_url":"postgres://postgres:postgres@localhost:5432/gator?sslmode=disable","current_user_name":"unknown"}
+╭───────────────────╮
+│ Log in as kahya 🛡︎ │
+╰┬──────────────────╯
+ > Command: go run . login kahya
+ ├─  ?  Expect exit code 0
+
+ > Command exit code: 1
+ > Command stdout:
+
+[error] encountered error running handler: [error] encountered retrieving username pq: null value in column "id" of relation "users" violates not-null constraint (23502)
+ > Command stderr:
+
+exit status 1
+╭───────────────────────────────────╮
+│ Check kahya is the current user 🛡︎ │
+╰┬──────────────────────────────────╯
+ > Command: cat ~/.gatorconfig.json
+ ├─  ?  Expect exit code 0
+ ├─  ?  Expect stdout to contain all of:
+ │       - 'kahya'                      
+
+ > Command exit code: 0
+ > Command stdout:
+
+{"db_url":"postgres://postgres:postgres@localhost:5432/gator?sslmode=disable","current_user_name":"unknown"}
+╭────────────────────────────────────╮
+│ Reject login for an unknown user 🛡︎ │
+╰┬───────────────────────────────────╯
+ > Command: go run . login unknown
+ ├─  ?  Expect exit code 1
+
+ > Command exit code: 1
+ > Command stdout:
+
+[error] encountered error running handler: [error] encountered retrieving username pq: null value in column "id" of relation "users" violates not-null constraint (23502)
+ > Command stderr:
+
+exit status 1

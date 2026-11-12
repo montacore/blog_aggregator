@@ -4,6 +4,9 @@ VALUES ($1, $2, $3, $4)
 RETURNING *;
 
 -- name: GetUser :one
-INSERT INTO users (name)
-VALUES ($1)
-RETURNING *;
+SELECT *
+FROM users
+WHERE name = $1;
+
+-- name: reset :exec
+TRUNCATE users;

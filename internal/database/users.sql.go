@@ -43,9 +43,9 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getUser = `-- name: GetUser :one
-INSERT INTO users (name)
-VALUES ($1)
-RETURNING id, created_at, updated_at, name
+SELECT id, created_at, updated_at, name
+FROM users
+WHERE name = $1
 `
 
 func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
@@ -58,4 +58,13 @@ func (q *Queries) GetUser(ctx context.Context, name string) (User, error) {
 		&i.Name,
 	)
 	return i, err
+}
+
+const reset = `-- name: reset :exec
+TRUNCATE users
+`
+
+func (q *Queries) reset(ctx context.Context) error {
+	_, err := q.db.ExecContext(ctx, reset)
+	return err
 }

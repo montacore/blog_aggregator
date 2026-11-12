@@ -6,7 +6,7 @@ import (
 	"os"
 	_ "github.com/lib/pq"
 	"database/sql"
-	"internal/database"
+	"github.com/montacore/blog_aggregator/internal/database"
 )
 
 type state struct {
@@ -20,14 +20,13 @@ func main() {
 		fmt.Printf("error reading from config file: %s", err)
 		os.Exit(1)
 	}
-
 	dbURL := cfg.DbURL
 	db, err := sql.Open("postgres", dbURL)
-	db, err = database.New(db)
+	dbNew := database.New(db)
 	if err != nil {
 		fmt.Printf("[ERROR] there was an issue creating database connection %s", err)
 	}
-	programState := state{&cfg, db}
+	programState := state{&cfg, dbNew}
 	if len(os.Args) <= 2 {
 		fmt.Println("[ERROR] not enough arguments provided")
 		os.Exit(1)
@@ -40,9 +39,12 @@ func main() {
 	cmds := commands{ make(map[string]func(*state, command) error),
 	}
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 	err  = cmds.run(&programState, cmd)
 	if err != nil {
 		fmt.Printf("[error] encountered error running handler: %s\n", err)
+		os.Exit(1)
 	}
+	
 
 }

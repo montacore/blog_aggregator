@@ -1,0 +1,4 @@
+# github.com/montacore/blog_aggregator
+./handle_user.go:24:45: cmd.name undefined (type command has no field or method name)
+./main.go:26:12: assignment mismatch: 2 variables but database.New returns 1 value
+./main.go:30:30: cannot use db (variable of type *sql.DB) as *database.Queries value in struct literal

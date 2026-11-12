@@ -1,0 +1,26 @@
+.
+├── blog_aggregator
+├── commands.go
+├── du_out.txt
+├── go.mod
+├── go.sum
+├── handle_user.go
+├── internal
+│   ├── config
+│   │   └── config.go
+│   └── database
+│       ├── db.go
+│       ├── models.go
+│       └── users.sql.go
+├── main.go
+├── out.txt
+├── psql.txt
+├── sql
+│   ├── queries
+│   │   └── users.sql
+│   └── schema
+│       └── 001_users.sql
+├── sqlc.yaml
+└── tree.txt
+
+7 directories, 17 files

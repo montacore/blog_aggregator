@@ -41,6 +41,7 @@ func main() {
 	cmds.register("register", handlerRegister)
 	cmds.register("reset", handlerReset)
 	cmds.register("users", handlerUsers)
+	cmds.register("agg", handlerAgg)
 	err  = cmds.run(&programState, cmd)
 	if err != nil {
 		log.Fatal("[error] encountered error registering command: %w", err)

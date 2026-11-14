@@ -4,17 +4,20 @@ import (
 	"encoding/xml"
 	"net/http"
 	"fmt"
-	"log"
 	"context"
 	"io"
+	"html"
+	"time"
 )
 
 type RSSFeed struct {
-	Title			string		`xml:"title"`
-	Link			string		`xml:"link"`
-	Description		string		`xml:"description"`
-	Item			[]RSSItem	`xml:"item"`
-} `xml:"channel"`
+	Channel struct {
+		Title			string		`xml:"title"`
+		Link			string		`xml:"link"`
+		Description		string		`xml:"description"`
+		Item			[]RSSItem	`xml:"item"`
+	} `xml:"channel"`
+}
 
 type RSSItem struct {
 	Title			string		`xml:"title"`
@@ -52,7 +55,10 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 		return nil, fmt.Errorf("[error] encountered an error creating request: %w", err)
 	}
 	req.Header.Set("User-Agent", "gator")
-	client := http.Client{}
+	client := &http.Client{
+		Timeout: 10 * time.Second,
+	}
+	
 	resp, err := client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("[error] there was a problem with your request: %w", err)
@@ -66,8 +72,13 @@ func fetchFeed(ctx context.Context, feedURL string) (*RSSFeed, error) {
 	var result RSSFeed
 	err = xml.Unmarshal(body, &result)
 	if err != nil {
-		return nil, fmt.Errorf("[error] there was an error unmarshaling the xml response: %w", err)
+		return nil, fmt.Errorf("[error] there was an error unmarshalling the xml response: %w", err)
 	}
-
+	result.Channel.Title = html.UnescapeString(result.Channel.Title)
+	result.Channel.Description = html.UnescapeString(result.Channel.Description)
+	for i := range result.Channel.Item {
+		result.Channel.Item[i].Description = html.UnescapeString(result.Channel.Item[i].Description)
+		result.Channel.Item[i].Title = html.UnescapeString(result.Channel.Item[i].Title)
+	}
 	return &result, nil
 }

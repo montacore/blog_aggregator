@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"time"
-
 	"github.com/google/uuid"
 	"github.com/montacore/blog_aggregator/internal/database"
 )
@@ -73,5 +72,14 @@ func handlerUsers(s *state, cmd command) error{
 		}
 		fmt.Printf("* %s\n", user.Name)
 	}
+	return nil
+}
+
+func handlerAgg(s *state, cmd command) error {
+	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
+	if err != nil {
+		return fmt.Errorf("[error] failed to fetch RSS feed data: %w", err)
+	}
+	fmt.Printf("%+v",feed)
 	return nil
 }

@@ -44,6 +44,7 @@ func main() {
 	cmds.register("agg", handlerAgg)
 	cmds.register("addfeed", handlerAddFeed)
 	cmds.register("feeds", handlerFeeds)
+	cmds.register("follow", handlerFollow)
 	err  = cmds.run(&programState, cmd)
 	if err != nil {
 		log.Fatalf("[error] encountered error registering command: %v", err)

@@ -121,3 +121,42 @@ func handlerFeeds(s *state, cmd command) error {
 	fmt.Printf("%+v", feeds)
 	return nil
 }
+
+
+
+func handlerFollow(s *state, cmd command) error {
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("[error] invalid argument count")
+	}
+	user, err := s.db.GetUser(context.Background(),s.cfg.CurrentUsername)
+	if err != nil {
+		return fmt.Errorf("[error] getting user from database: %w", err)
+	}
+	feed, err := s.db.GetFeedByURL(context.Background(), cmd.args[0]) 
+
+	if err != nil {
+
+		return fmt.Errorf("[error] creating feed: %w", err)
+	}
+	feedFollowRow, err := s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID: user.ID,
+		FeedID: feed.ID,
+		
+	})
+	if err != nil {
+		return fmt.Errorf("[error] there was an error looking up feed follow: %w", err)
+	}
+	fmt.Printf("%s follows %s\n", feedFollowRow.UserName, feedFollowRow.FeedName)
+	return nil
+}
+
+func handlerFollowing(s *state, cmd command) error {
+	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUsername) 
+	if err != nil {
+		return fmt.Errorf("[error] There was a problem getting the current user: %w", err)
+	}
+	follows, err := database.GetFeedFollowsForUser(context.Background(), user.ID)
+}

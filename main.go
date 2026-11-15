@@ -17,18 +17,18 @@ type state struct {
 func main() {
 	cfg, err := config.Read()
 	if err != nil {
-		log.Fatal("[error] there was a problem reading the config file: %w", err)
+		log.Fatalf("[error] there was a problem reading the config file: %v", err)
 	}
 	dbURL := cfg.DbURL
 	db, err := sql.Open("postgres", dbURL)
 	dbNew := database.New(db)
 	if err != nil {
-		log.Fatalf("[ERROR] there was an issue creating database connection %s", err)
+		log.Fatalf("[ERROR] there was an issue creating database connection %v", err)
 
 	}
 	programState := state{&cfg, dbNew}
 	if len(os.Args) < 2 {
-		log.Fatal("you must provide, at minimum, a command: %w", err)
+		log.Fatalf("you must provide, at minimum, a command: %v", err)
 	}
 	cmd := command{
 		command: os.Args[1],
@@ -42,9 +42,11 @@ func main() {
 	cmds.register("reset", handlerReset)
 	cmds.register("users", handlerUsers)
 	cmds.register("agg", handlerAgg)
+	cmds.register("addfeed", handlerAddFeed)
+	cmds.register("feeds", handlerFeeds)
 	err  = cmds.run(&programState, cmd)
 	if err != nil {
-		log.Fatal("[error] encountered error registering command: %w", err)
+		log.Fatalf("[error] encountered error registering command: %v", err)
 	}
 	
 

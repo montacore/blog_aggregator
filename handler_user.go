@@ -83,3 +83,41 @@ func handlerAgg(s *state, cmd command) error {
 	fmt.Printf("%+v",feed)
 	return nil
 }
+
+
+func handlerAddFeed(s *state, cmd command) error {
+	if len(cmd.args) != 2 {
+		return fmt.Errorf("[error] invalid argument count")
+	}
+	user, err := s.db.GetUser(context.Background(),s.cfg.CurrentUsername)
+	if err != nil {
+		return fmt.Errorf("[error] getting user from database: %w", err)
+	}
+	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		Name: cmd.args[0],
+		Url: cmd.args[1],
+		UserID: user.ID,
+
+	})
+	if err != nil {
+		return fmt.Errorf("[error] creating feed: %w", err)
+	}
+	fmt.Printf("%+v", feed)
+
+	return nil
+}
+
+func handlerFeeds(s *state, cmd command) error {
+	if len(cmd.args) > 1 {
+		return fmt.Errorf("[error] incorrect number of arguments passed")
+	}
+	feeds, err := s.db.PrintFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("[error] there was a problem retrieving the data from feeds database: %w", err)
+	}
+	fmt.Printf("%+v", feeds)
+	return nil
+}

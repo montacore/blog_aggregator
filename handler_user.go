@@ -85,13 +85,9 @@ func handlerAgg(s *state, cmd command) error {
 }
 
 
-func handlerAddFeed(s *state, cmd command) error {
+func handlerAddFeed(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 2 {
 		return fmt.Errorf("[error] invalid argument count")
-	}
-	user, err := s.db.GetUser(context.Background(),s.cfg.CurrentUsername)
-	if err != nil {
-		return fmt.Errorf("[error] getting user from database: %w", err)
 	}
 	feed, err := s.db.CreateFeed(context.Background(), database.CreateFeedParams{
 		ID: uuid.New(),
@@ -104,6 +100,18 @@ func handlerAddFeed(s *state, cmd command) error {
 	})
 	if err != nil {
 		return fmt.Errorf("[error] creating feed: %w", err)
+	}
+
+	_, err = s.db.CreateFeedFollow(context.Background(), database.CreateFeedFollowParams{
+		ID: uuid.New(),
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+		UserID: user.ID,
+		FeedID: feed.ID,
+		
+	})
+	if err != nil {
+		return fmt.Errorf("[error] there was an error encountered when attempting to follow feed: %w", err)
 	}
 	fmt.Printf("%+v", feed)
 
@@ -124,13 +132,9 @@ func handlerFeeds(s *state, cmd command) error {
 
 
 
-func handlerFollow(s *state, cmd command) error {
+func handlerFollow(s *state, cmd command, user database.User) error {
 	if len(cmd.args) != 1 {
 		return fmt.Errorf("[error] invalid argument count")
-	}
-	user, err := s.db.GetUser(context.Background(),s.cfg.CurrentUsername)
-	if err != nil {
-		return fmt.Errorf("[error] getting user from database: %w", err)
 	}
 	feed, err := s.db.GetFeedByURL(context.Background(), cmd.args[0]) 
 
@@ -153,10 +157,13 @@ func handlerFollow(s *state, cmd command) error {
 	return nil
 }
 
-func handlerFollowing(s *state, cmd command) error {
-	user, err := s.db.GetUser(context.Background(), s.cfg.CurrentUsername) 
+func handlerFollowing(s *state, cmd command, user database.User) error {
+	follows, err := s.db.GetFeedFollowsForUser(context.Background(), user.ID)
 	if err != nil {
-		return fmt.Errorf("[error] There was a problem getting the current user: %w", err)
+		return fmt.Errorf("[error] encountered an error retrieving user: %w", err)
 	}
-	follows, err := database.GetFeedFollowsForUser(context.Background(), user.ID)
+	for _, following := range follows {
+		fmt.Println(following.FeedName)
+	}
+	return  nil
 }

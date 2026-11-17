@@ -76,12 +76,19 @@ func handlerUsers(s *state, cmd command) error{
 }
 
 func handlerAgg(s *state, cmd command) error {
-	feed, err := fetchFeed(context.Background(), "https://www.wagslane.dev/index.xml")
-	if err != nil {
-		return fmt.Errorf("[error] failed to fetch RSS feed data: %w", err)
+	if len(cmd.args) != 1 {
+		return fmt.Errorf("[error] incorrect number of arguments")
 	}
-	fmt.Printf("%+v",feed)
-	return nil
+	interval, err := time.ParseDuration(cmd.args[0])
+	if err != nil {
+		return fmt.Errorf("invalid interval: %w", err)
+	}
+	fmt.Printf("Fetch feed  every %s\n", interval)
+
+	ticker := time.NewTicker(interval)
+	for ; ; <-ticker.C {
+		scrapeFeeds(s)
+	}
 }
 
 

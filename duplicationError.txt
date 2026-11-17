@@ -1,2 +1,0 @@
-[error] encountered error running handler: pq: duplicate key value violates unique constraint "users_name_key" (23505)
-exit status 1

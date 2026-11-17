@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"time"
+	"strconv"
 	"github.com/google/uuid"
 	"github.com/montacore/blog_aggregator/internal/database"
 )
@@ -192,6 +193,33 @@ func handlerUnfollow(s *state, cmd command, user database.User) error {
 	})
 	if err != nil {
 		return fmt.Errorf("[error] unable to unfollow: %w", err)
+	}
+	return nil
+}
+
+
+func handlerBrowse(s *state, cmd command, user database.User) error {
+	limit := int32(2) // default case
+	
+	if len(cmd.args) > 0 {
+
+		convertedLimit, err := strconv.Atoi(cmd.args[0])
+		if err != nil {
+			return fmt.Errorf("[error] could not parse limit argument: %w", err)
+		}
+		limit = int32(convertedLimit)
+	}
+	posts, err  := s.db.PostsForUser(context.Background(), database.PostsForUserParams{
+		UserID: user.ID,
+		Limit: limit,
+	})
+	if err != nil {
+		return fmt.Errorf("[error] could not retrieve posts: %w", err)
+	}
+
+
+	for _, post := range posts {
+		fmt.Printf("%s\n%s\n\n", post.Title, post.Url)
 	}
 	return nil
 }
